@@ -1,0 +1,89 @@
+
+<%@page import="com.google.gson.JsonObject"%>
+<%@page import="com.google.gson.JsonArray"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.Connection"%>
+<%
+    try {
+        //Int id = request.getParameter("id");
+         String   id =request.getParameter("id");
+
+        // id = "8";
+        System.out.println("id>>>>>>>>>" + id);
+
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/pbdaapp?zeroDateTimeBehavior=convertToNull", "root", "root");
+        Statement stmt = con.createStatement();
+        String query = "select * from products where id='"+id+"'";
+        System.out.println(query);
+        ResultSet rset = stmt.executeQuery(query);
+      //  System.out.println(rset);
+        JsonObject j = null;
+
+        if (rset.next()) {
+            j = new JsonObject();
+            // String id = rset.getString("id");
+
+             String shopid = rset.getString("shopid");
+              
+            
+            String category = rset.getString("category");
+            String product = rset.getString("product");
+            String purchaseprice = rset.getString("purchaseprice");
+            String salesprice = rset.getString("salesprice");
+            String isoffer = rset.getString("isoffer");
+            String images = rset.getString("images");
+            String description = rset.getString("description");
+
+            j.addProperty("id", id);
+            j.addProperty("shopid", shopid);
+            j.addProperty("category", category);
+            j.addProperty("product", product);
+            j.addProperty("purchaseprice", purchaseprice);
+            j.addProperty("salesprice", salesprice);
+            j.addProperty("isoffer", isoffer);
+            j.addProperty("images", images);
+            j.addProperty("description", description);
+
+            JsonArray galleryArray = new JsonArray();
+
+            String galquery = "select * from gallery where productid='" + id + "'";
+            System.out.println(galquery);
+
+            ResultSet rset1 = stmt.executeQuery(galquery);
+            JsonObject j1 = new JsonObject();
+         //   System.out.println(rset1);
+            while (rset1.next()) {
+
+                
+
+                String  pid = rset1.getString("id");
+                String  productid = rset1.getString ("productid");
+
+                String image = rset1.getString("image");
+ j1.addProperty("id", pid);
+                j1.addProperty("productid", productid);
+                j1.addProperty("image", image);
+                 galleryArray.add(j1);
+
+            j.add("gallery", galleryArray);
+              
+            }
+             
+
+        }
+        System.out.println("object=" + j);
+        response.setCharacterEncoding("UTF-8");
+
+        response.setContentType("application/json");
+
+        response.getWriter().write(j.toString());
+
+    } catch (Exception e) {
+        System.out.println(e);
+
+        e.printStackTrace();
+    }
+%>

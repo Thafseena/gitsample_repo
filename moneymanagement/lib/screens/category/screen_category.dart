@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:moneymanagement/screens/category/expense_category_list.dart';
+import 'package:moneymanagement/screens/category/income_category_list.dart';
 
 class ScreenCategory extends StatefulWidget {
   const ScreenCategory({super.key});
@@ -21,11 +23,22 @@ class _ScreenCategoryState extends State<ScreenCategory> with SingleTickerProvid
   Widget build(BuildContext context) {
     return Column(children:[
       TabBar(
+        unselectedLabelColor: Colors.grey,
         controller: _tabController,
         tabs: [
         Tab(text: 'INCOME',),
         Tab(text: 'EXPENSE',),
-      ])
+      ]),
+      Expanded(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            IncomeCategoryList(),
+            ExpenseCategoryList()
+          // Text("Income List Here..."),
+          // Text("Expense List Here..."),
+        ]),
+      )
     ]);
   }
 }
